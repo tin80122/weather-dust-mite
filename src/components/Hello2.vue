@@ -149,7 +149,9 @@
           class="title"
           :key="'C'+cityRow.cityId">
           <th scope="row">Taiwan</th>
-          <th>{{cityRow.city}}</th>
+          <th>{{cityRow.city}}
+            <font-awesome-icon :icon="['fas', opened.includes(cityRow.cityId) ?'sort-down' : 'sort-up' ] " />
+          </th>
           <td>-</td>
           <td>-</td>
           <td>-</td>
