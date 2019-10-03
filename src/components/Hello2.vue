@@ -1,10 +1,15 @@
 <script>
-  import axios from 'axios'
+	import axios from 'axios'
+	import Pagination from './Pagination.vue'
+
   let config = {
     headers: {'Authorization': 'CWB-2637AACE-A630-418A-87BE-D04AB1617362'}
   }
   export default {
-    name: 'hello',
+		name: 'hello',
+		components: {
+			Pagination
+		},
     data () {
       return {
         opened: [],
@@ -13,7 +18,6 @@
         search: "",
         countOfPage: 10,
         currPage: 1,
-        pageStart: 1,
         sort: "",
         asc: true,
         sortKey: ''
@@ -67,10 +71,6 @@
       dustStatusCondition (row) {
         return row.RH >= 60 && row.temperature >= 20 && row.temperature <= 30 === true;
       },
-      setPage (newPage) {
-        this.currPage = newPage;
-        console.log("TCL: setPage -> currPage", this.currPage);
-      },
       sortTable (key, direction) {
         this.sort = `${key} > ${direction}`;
         this.asc = this.asc === false;
@@ -84,22 +84,17 @@
             }
           })
         });
-      }
+			},
+			updateCurrPage (page) {
+				this.currPage = page;
+        console.log("TCL: updateCurrPage -> currPage", page);
+			}
     },
     computed: {
       filteredRows: function () {
         return (this.search.trim() !== '')
         ? this.twCity.filter(row => row.city.includes(this.search))
         : this.twCity;
-      },
-      totalPage: function () {
-        return Math.ceil(this.filteredRows.length / this.countOfPage);
-      },
-      disabledPrevBtn: function () {
-        return this.currPage === this.pageStart ? 'disabled' : '';
-      },
-      disabledNextBtn: function () {
-        return this.currPage === this.totalPage ? 'disabled' : '';
       },
       sortIcon: function () {
         return this.asc === true ? 'sort-amount-up' : 'sort-amount-down-alt';
@@ -172,38 +167,11 @@
       </template>
     </table>
 
-    <ul v-show="filteredRows.length !== 0" class="pagination">
-      <li class="page-item" :class="disabledPrevBtn">
-        <a href="#"
-          class="page-link"
-          role="button"
-          @click.prevent="setPage(currPage-1)">
-          <span aria-hidden="true">&laquo;</span>
-          <span class="sr-only">Previous</span>
-        </a>
-      </li>
-      <li class="page-item"
-        v-for="n in totalPage"
-        :key="'p'+n"
-        :class="{'active': (currPage === (n))}"
-        >
-        <a href="#"
-          class="page-link"
-          role="button"
-          @click.prevent="setPage(n)">
-          {{n}}
-        </a>
-      </li>
-      <li class="page-item" :class="disabledNextBtn">
-        <a href="#"
-          class="page-link"
-          role="button"
-          @click.prevent="setPage(currPage+1)">
-            <span aria-hidden="true">&raquo;</span>
-            <span class="sr-only">Next</span>
-        </a>
-      </li>
-    </ul>
+    <pagination
+			:OnePageRow = "countOfPage"
+			:filteredRowsLength = "filteredRows.length"
+			@update-currPage = "updateCurrPage"
+		/>
     <div v-show="filteredRows.length === 0">
       Not found
     </div>
