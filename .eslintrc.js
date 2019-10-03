@@ -28,5 +28,6 @@ module.exports = {
 		"indent": 0,
 		"no-tabs": 0,
 		"prettier/prettier": 0,
+		"no-mixed-spaces-and-tabs": 0
   }
 }

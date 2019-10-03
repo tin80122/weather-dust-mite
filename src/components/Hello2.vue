@@ -15,9 +15,12 @@
         opened: [],
         twCity: [],
         twData: {},
-        search: "",
-        countOfPage: 10,
-        currPage: 1,
+				search: "",
+				page: {
+					OnePageRow: 10,
+					currPage: 0,
+					pageStart: 0
+				},
         sort: "",
         asc: true,
         sortKey: ''
@@ -86,12 +89,12 @@
         });
 			},
 			updateCurrPage (page) {
-				this.currPage = page;
-        console.log("TCL: updateCurrPage -> currPage", page);
+				this.page.currPage = page;
 			}
     },
     computed: {
       filteredRows: function () {
+				this.currPage = 0;
         return (this.search.trim() !== '')
         ? this.twCity.filter(row => row.city.includes(this.search))
         : this.twCity;
@@ -102,7 +105,15 @@
     },
     mounted: function () {
       this.getData()
-    }
+		},
+		watch: {
+			filteredRows: function () {
+				console.log(this.filteredRows);
+			},
+			twCity: function () {
+				console.log(this.twCity);
+			}
+		}
   }
 
 </script>
@@ -138,7 +149,7 @@
           <th scope="col">Dust mite situation</th>
         </tr>
       </thead>
-      <template v-for="cityRow in filteredRows.slice(currPage, currPage + countOfPage)">
+      <template v-for="cityRow in filteredRows.slice(page.currPage * page.OnePageRow, (page.currPage + 1 ) * page.OnePageRow)">
         <tr @click.prevent="toggleDetail(cityRow.cityId)"
           :class="{ opened: opened.includes(cityRow.cityId)}"
           class="title"
@@ -168,8 +179,10 @@
     </table>
 
     <pagination
-			:OnePageRow = "countOfPage"
+			:OnePageRow = "page.OnePageRow"
 			:filteredRowsLength = "filteredRows.length"
+			:initialCurrPage.sync = "page.currPage"
+			:pageStart = "page.pageStart"
 			@update-currPage = "updateCurrPage"
 		/>
     <div v-show="filteredRows.length === 0">
