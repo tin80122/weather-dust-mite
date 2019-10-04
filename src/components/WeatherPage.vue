@@ -6,7 +6,7 @@
     headers: {'Authorization': 'CWB-2637AACE-A630-418A-87BE-D04AB1617362'}
   }
   export default {
-		name: 'hello',
+		name: 'weatherPage',
 		components: {
 			Pagination
 		},
@@ -16,11 +16,9 @@
         twCity: [],
         twData: {},
 				search: "",
-				page: {
-					OnePageRow: 10,
-					currPage: 0,
-					pageStart: 0
-				},
+				onePageRow: 10,
+				currPage: 0,
+				pageStart: 0,
         sort: "",
         asc: true,
         sortKey: ''
@@ -89,12 +87,11 @@
         });
 			},
 			updateCurrPage (page) {
-				this.page.currPage = page;
+				this.currPage = page;
 			}
     },
     computed: {
       filteredRows: function () {
-				this.currPage = 0;
         return (this.search.trim() !== '')
         ? this.twCity.filter(row => row.city.includes(this.search))
         : this.twCity;
@@ -107,11 +104,8 @@
       this.getData()
 		},
 		watch: {
-			filteredRows: function () {
-				console.log(this.filteredRows);
-			},
-			twCity: function () {
-				console.log(this.twCity);
+			search: function () {
+				this.currPage = 0;
 			}
 		}
   }
@@ -149,7 +143,7 @@
           <th scope="col">Dust mite situation</th>
         </tr>
       </thead>
-      <template v-for="cityRow in filteredRows.slice(page.currPage * page.OnePageRow, (page.currPage + 1 ) * page.OnePageRow)">
+      <template v-for="cityRow in filteredRows.slice(currPage * onePageRow, (currPage + 1 ) * onePageRow)">
         <tr @click.prevent="toggleDetail(cityRow.cityId)"
           :class="{ opened: opened.includes(cityRow.cityId)}"
           class="title"
@@ -179,13 +173,12 @@
     </table>
 
     <pagination
-			:OnePageRow = "page.OnePageRow"
 			:filteredRowsLength = "filteredRows.length"
-			:initialCurrPage.sync = "page.currPage"
-			:pageStart = "page.pageStart"
-			@update-currPage = "updateCurrPage"
+			:initialCurrPage.sync = "currPage"
+			:pageStart = "pageStart"
+			:onePageRow = "onePageRow"
 		/>
-    <div v-show="filteredRows.length === 0">
+    <div v-show="filteredRows.length === 0 && search.trim() != ''">
       Not found
     </div>
 

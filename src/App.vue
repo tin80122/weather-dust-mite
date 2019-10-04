@@ -1,17 +1,17 @@
 <template>
   <div id="app">
-		<!-- <HelloWorld msg="My first component" /> -->
+		<weatherPage />
   	<router-view></router-view>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import weatherPage from './components/WeatherPage.vue'
 
 export default {
 	name: 'app',
 	components: {
-		HelloWorld
+		weatherPage
 	}
 }
 </script>
